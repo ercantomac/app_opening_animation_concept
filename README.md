@@ -1,6 +1,8 @@
 # app_opening_animation_concept
 
-A new Flutter project.
+A mobile app icon launch animation concept, built with Flutter.
+
+## Working Demo: https://vocal-tulumba-15371e.netlify.app/
 
 ## Getting Started
 
