@@ -19,3 +19,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/Discord.png
+    - assets/Instagram.png
+    - assets/Reddit.png
+    - assets/Spotify.png
+    - assets/YouTube.png

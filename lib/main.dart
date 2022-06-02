@@ -76,6 +76,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),
   ];
   final List<Color> _randomColors = <Color>[];
+  final List<Image> _icons = <Image>[
+    const Image(image: AssetImage('assets/Discord.png')),
+    const Image(image: AssetImage('assets/Instagram.png')),
+    const Image(image: AssetImage('assets/Reddit.png')),
+    const Image(image: AssetImage('assets/Spotify.png')),
+    const Image(image: AssetImage('assets/YouTube.png')),
+    const Image(image: AssetImage('assets/Discord.png')),
+    const Image(image: AssetImage('assets/Instagram.png')),
+    const Image(image: AssetImage('assets/Reddit.png')),
+    const Image(image: AssetImage('assets/Spotify.png')),
+    const Image(image: AssetImage('assets/YouTube.png')),
+    const Image(image: AssetImage('assets/Discord.png')),
+    const Image(image: AssetImage('assets/Instagram.png')),
+    const Image(image: AssetImage('assets/Reddit.png')),
+    const Image(image: AssetImage('assets/Spotify.png')),
+    const Image(image: AssetImage('assets/YouTube.png')),
+    const Image(image: AssetImage('assets/Discord.png'))
+  ];
   late Size _size = Size.zero;
   final int _numberOfIcons = 16;
   late bool _blur = false;
@@ -84,9 +102,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _gridScaleController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    _alignController = AnimationController(duration: const Duration(milliseconds: 600), reverseDuration: const Duration(milliseconds: 800), vsync: this);
+    _gridScaleController = AnimationController(duration: const Duration(milliseconds: /*600*/ 800), vsync: this);
+    _controller = AnimationController(duration: const Duration(milliseconds: /*800*/ 600), vsync: this);
+    _alignController =
+        AnimationController(duration: const Duration(milliseconds: /*600*/ 400), reverseDuration: const Duration(milliseconds: /*800*/ 600), vsync: this);
     _controller.addListener(() {
       _widthValue = _widthAnimation.value;
       _heightValue = _heightAnimation.value;
@@ -122,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   void swapOrder(int index) {
+    _icons.add(_icons.removeAt(index));
     _dragAlignment.add(_dragAlignment.removeAt(index));
     _randomColors.add(_randomColors.removeAt(index));
     _alignmentAnimation = CurvedAnimation(
@@ -147,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     if (_size == Size.zero) {
       setState(() {
         _size = MediaQuery.of(context).size;
-        _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 7);
+        _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
         _widthValue = _squareDimension;
         _heightValue = _squareDimension;
         _alignmentAnimation = CurvedAnimation(
@@ -223,15 +243,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 sigmaX: CurvedAnimation(
                                   //parent: _controller,
                                   parent: _gridScaleController,
-                                  curve: /*Curves.linearToEaseOut*/ Curves.easeInOut,
-                                  reverseCurve: /*Curves.easeInToLinear*/ Curves.easeInOut.flipped,
-                                ).drive(Tween<double>(begin: 0.001, end: 6.0)).value,
+                                  curve: Curves.easeInOut,
+                                  reverseCurve: Curves.easeInOut.flipped,
+                                ).drive(Tween<double>(begin: 0.0, end: 6.0)).value,
                                 sigmaY: CurvedAnimation(
                                   //parent: _controller,
                                   parent: _gridScaleController,
-                                  curve: /*Curves.linearToEaseOut*/ Curves.easeInOut,
-                                  reverseCurve: /*Curves.easeInToLinear*/ Curves.easeInOut.flipped,
-                                ).drive(Tween<double>(begin: 0.001, end: 6.0)).value),
+                                  curve: Curves.easeInOut,
+                                  reverseCurve: Curves.easeInOut.flipped,
+                                ).drive(Tween<double>(begin: 0.0, end: 6.0)).value),
                             child: child2);
                       },
                       child: Stack(
@@ -254,9 +274,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   child: Container(
                                     width: _squareDimension,
                                     height: _squareDimension,
+                                    padding: const EdgeInsets.all(8.0),
                                     decoration: ShapeDecoration(
-                                        color: _randomColors[i],
+                                        //color: _randomColors[i],
+                                        color: Colors.grey.shade900,
                                         shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
+                                    child: _icons[i],
                                   ),
                                 ),
                               ),
@@ -284,9 +307,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 child: Container(
                                   width: _squareDimension,
                                   height: _squareDimension,
+                                  padding: const EdgeInsets.all(8.0),
                                   decoration: ShapeDecoration(
-                                      color: _randomColors[i],
+                                      //color: _randomColors[i],
+                                      color: Colors.grey.shade900,
                                       shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
+                                  child: _icons[i],
                                 ),
                               ),
                             ),
@@ -315,8 +341,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       child: Container(
                         width: _widthValue,
                         height: _heightValue,
+                        padding: const EdgeInsets.all(8.0),
                         decoration: ShapeDecoration(
-                            color: _randomColors.last,
+                            //color: _randomColors.last,
+                            color: Colors.grey.shade900,
                             shape: ContinuousRectangleBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(CurvedAnimation(
                               //parent: _controller,
@@ -325,116 +353,124 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               reverseCurve: Curves.easeInToLinear,
                             ).drive(Tween<double>(begin: (_squareDimension / 1.5), end: 0.0)).value)))),
                         child: Visibility(
-                          visible: (!_controller.isDismissed && !(_controller.status == AnimationStatus.reverse)),
-                          child: Stack(
-                            children: <Align>[
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (_controller.isCompleted) {
-                                      _alignmentAnimation = CurvedAnimation(
-                                        parent: _alignController,
-                                        curve: Curves.fastLinearToSlowEaseIn,
-                                        reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
-                                      _controller.reverse();
-                                      _alignController.reverse();
-                                      _gridScaleController.reverse();
-                                    }
-                                  },
-                                  padding: const EdgeInsets.all(16.0),
-                                  icon: const Icon(Icons.clear_rounded),
-                                  iconSize: 32.0,
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: GestureDetector(
-                                  /*onVerticalDragDown: (DragDownDetails details) {
-                                    _controller.stop();
-                                  },*/
-                                  /*onVerticalDragUpdate: (DragUpdateDetails details) {
-                                    //print(details.delta.dy);
-                                    //if (((details.delta.dy == -1.0) && (_controller.value > 0.6)) || ((details.delta.dy == 1.0) && (_controller.value < 1.0))) {
-                                    setState(() {
-                                      _widthValue += (details.delta.dy);
-                                      _heightValue += (details.delta.dy);
-                                      _alignmentValue += Alignment(/*(details.delta.dx / _size.width)*/ 0, (details.delta.dy / _size.height));
-                                    });
-                                    //}
-                                  },*/
-                                  onPanUpdate: (DragUpdateDetails details) {
-                                    if (details.delta.dy < 0) {
-                                      if (_alignmentValue.x > (-1) &&
-                                          _alignmentValue.y > (-1) &&
-                                          _widthValue > _squareDimension &&
-                                          _heightValue > _squareDimension) {
-                                        setState(() {
-                                          _widthValue += (details.delta.dy);
-                                          //_heightValue += (details.delta.dy);
-                                          _heightValue -= 1;
-                                          _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
-                                        });
-                                      }
-                                    } else {
-                                      if (_alignmentValue.x < 1 && _alignmentValue.y < 1 && _widthValue < _size.width && _heightValue < _size.height) {
-                                        setState(() {
-                                          _widthValue += (details.delta.dy);
-                                          //_heightValue += (details.delta.dy);
-                                          _heightValue += 1;
-                                          _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
-                                        });
-                                      }
-                                    }
-                                  },
-                                  /*onVerticalDragEnd*/ onPanEnd: (DragEndDetails details) {
-                                    if (details.velocity.pixelsPerSecond.dy < (-200) || _controller.value < 0.65) {
-                                      _alignmentAnimation = CurvedAnimation(
-                                        parent: _alignController,
-                                        curve: Curves.fastLinearToSlowEaseIn,
-                                        reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(AlignmentTween(begin: _dragAlignment.last, end: _alignmentValue));
-                                      _widthAnimation = CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
-                                        reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(Tween<double>(begin: _squareDimension, end: _widthValue));
-                                      _heightAnimation = CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
-                                        reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(Tween<double>(begin: _squareDimension, end: _heightValue));
-                                      _controller.reverse();
-                                      _alignController.reverse();
-                                      _gridScaleController.reverse();
-                                      /*_controller.animateBack(0.0);
-                                      _alignController.animateBack(0.0);
-                                      _gridScaleController.animateBack(0.0);*/
-                                    } else {
-                                      _alignmentAnimation = CurvedAnimation(
-                                        parent: _alignController,
-                                        curve: Curves.fastLinearToSlowEaseIn,
-                                        reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(AlignmentTween(begin: _alignmentValue, end: Alignment.center));
-                                      _widthAnimation = CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
-                                        reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(Tween<double>(begin: _widthValue, end: (MediaQuery.of(context).size.width)));
-                                      _heightAnimation = CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
-                                        reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
-                                      ).drive(Tween<double>(begin: _heightValue, end: (MediaQuery.of(context).size.height)));
-                                      _controller.forward(from: 0.0);
-                                      _alignController.forward(from: 0.0);
-                                    }
-                                  },
-                                  child: child,
-                                ),
-                              ),
-                            ],
+                          //visible: (!_controller.isDismissed && !(_controller.status == AnimationStatus.reverse)),
+                          visible: true,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 400),
+                            switchInCurve: Curves.easeInOut,
+                            switchOutCurve: Curves.easeInOut,
+                            child: (!_controller.isDismissed && !(_controller.status == AnimationStatus.reverse))
+                                ? Stack(
+                                    children: <Align>[
+                                      Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            if (_controller.isCompleted) {
+                                              _alignmentAnimation = CurvedAnimation(
+                                                parent: _alignController,
+                                                curve: Curves.fastLinearToSlowEaseIn,
+                                                reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
+                                              _controller.reverse();
+                                              _alignController.reverse();
+                                              _gridScaleController.reverse();
+                                            }
+                                          },
+                                          padding: const EdgeInsets.all(16.0),
+                                          icon: const Icon(Icons.clear_rounded),
+                                          iconSize: 32.0,
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: GestureDetector(
+                                          /*onVerticalDragDown: (DragDownDetails details) {
+                                      _controller.stop();
+                                    },*/
+                                          /*onVerticalDragUpdate: (DragUpdateDetails details) {
+                                      //print(details.delta.dy);
+                                      //if (((details.delta.dy == -1.0) && (_controller.value > 0.6)) || ((details.delta.dy == 1.0) && (_controller.value < 1.0))) {
+                                      setState(() {
+                                        _widthValue += (details.delta.dy);
+                                        _heightValue += (details.delta.dy);
+                                        _alignmentValue += Alignment(/*(details.delta.dx / _size.width)*/ 0, (details.delta.dy / _size.height));
+                                      });
+                                      //}
+                                    },*/
+                                          onPanUpdate: (DragUpdateDetails details) {
+                                            if (details.delta.dy < 0) {
+                                              if (_alignmentValue.x > (-1) &&
+                                                  _alignmentValue.y > (-1) &&
+                                                  _widthValue > _squareDimension &&
+                                                  _heightValue > _squareDimension) {
+                                                setState(() {
+                                                  _widthValue += (details.delta.dy);
+                                                  //_heightValue += (details.delta.dy);
+                                                  _heightValue -= 1;
+                                                  _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
+                                                });
+                                              }
+                                            } else {
+                                              if (_alignmentValue.x < 1 && _alignmentValue.y < 1 && _widthValue < _size.width && _heightValue < _size.height) {
+                                                setState(() {
+                                                  _widthValue += (details.delta.dy);
+                                                  //_heightValue += (details.delta.dy);
+                                                  _heightValue += 1;
+                                                  _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
+                                                });
+                                              }
+                                            }
+                                          },
+                                          /*onVerticalDragEnd*/ onPanEnd: (DragEndDetails details) {
+                                            if (details.velocity.pixelsPerSecond.dy < (-200) || _controller.value < 0.65) {
+                                              _alignmentAnimation = CurvedAnimation(
+                                                parent: _alignController,
+                                                curve: Curves.fastLinearToSlowEaseIn,
+                                                reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(AlignmentTween(begin: _dragAlignment.last, end: _alignmentValue));
+                                              _widthAnimation = CurvedAnimation(
+                                                parent: _controller,
+                                                curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
+                                                reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(Tween<double>(begin: _squareDimension, end: _widthValue));
+                                              _heightAnimation = CurvedAnimation(
+                                                parent: _controller,
+                                                curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
+                                                reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(Tween<double>(begin: _squareDimension, end: _heightValue));
+                                              _controller.reverse();
+                                              _alignController.reverse();
+                                              _gridScaleController.reverse();
+                                              /*_controller.animateBack(0.0);
+                                        _alignController.animateBack(0.0);
+                                        _gridScaleController.animateBack(0.0);*/
+                                            } else {
+                                              _alignmentAnimation = CurvedAnimation(
+                                                parent: _alignController,
+                                                curve: Curves.fastLinearToSlowEaseIn,
+                                                reverseCurve: Curves. /*easeInToLinear*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(AlignmentTween(begin: _alignmentValue, end: Alignment.center));
+                                              _widthAnimation = CurvedAnimation(
+                                                parent: _controller,
+                                                curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
+                                                reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(Tween<double>(begin: _widthValue, end: (MediaQuery.of(context).size.width)));
+                                              _heightAnimation = CurvedAnimation(
+                                                parent: _controller,
+                                                curve: Curves. /*fastLinearToSlowEaseIn*/ easeInOutCubicEmphasized,
+                                                reverseCurve: Curves. /*fastLinearToSlowEaseIn.flipped*/ easeInOutCubicEmphasized.flipped,
+                                              ).drive(Tween<double>(begin: _heightValue, end: (MediaQuery.of(context).size.height)));
+                                              _controller.forward(from: 0.0);
+                                              _alignController.forward(from: 0.0);
+                                            }
+                                          },
+                                          child: child,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : _icons.last,
                           ),
                         ),
                       ),
