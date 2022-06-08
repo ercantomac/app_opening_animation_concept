@@ -75,24 +75,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     const Alignment(0.3, (2 / 4) + 0.1),
     const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),
   ];
-  final List<Color> _randomColors = <Color>[];
-  final List<Image> _icons = <Image>[
-    Image(image: AssetImage('assets/Discord.png'), width: 384),
-    Image(image: AssetImage('assets/Instagram.png'), width: 384),
-    Image(image: AssetImage('assets/Reddit.png'), width: 384),
-    Image(image: AssetImage('assets/Spotify.png'), width: 384),
-    Image(image: AssetImage('assets/YouTube.png'), width: 384),
-    Image(image: AssetImage('assets/Discord.png'), width: 384),
-    Image(image: AssetImage('assets/Instagram.png'), width: 384),
-    Image(image: AssetImage('assets/Reddit.png'), width: 384),
-    Image(image: AssetImage('assets/Spotify.png'), width: 384),
-    Image(image: AssetImage('assets/YouTube.png'), width: 384),
-    Image(image: AssetImage('assets/Discord.png'), width: 384),
-    Image(image: AssetImage('assets/Instagram.png'), width: 384),
-    Image(image: AssetImage('assets/Reddit.png'), width: 384),
-    Image(image: AssetImage('assets/Spotify.png'), width: 384),
-    Image(image: AssetImage('assets/YouTube.png'), width: 384),
-    Image(image: AssetImage('assets/Discord.png'), width: 384)
+
+  //final List<Color> _randomColors = <Color>[];
+  final List<String> _icons = <String>[
+    'assets/Discord.png',
+    'assets/Instagram.png',
+    'assets/Reddit.png',
+    'assets/Spotify.png',
+    'assets/YouTube.png',
+    'assets/Discord.png',
+    'assets/Instagram.png',
+    'assets/Reddit.png',
+    'assets/Spotify.png',
+    'assets/YouTube.png',
+    'assets/Discord.png',
+    'assets/Instagram.png',
+    'assets/Reddit.png',
+    'assets/Spotify.png',
+    'assets/YouTube.png',
+    'assets/Discord.png',
   ];
   late Size _size = Size.zero;
   final int _numberOfIcons = 16;
@@ -103,8 +104,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _gridScaleController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    _controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    _alignController = AnimationController(duration: const Duration(milliseconds: 400), reverseDuration: const Duration(milliseconds: 600), vsync: this);
+    /*_controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    _alignController = AnimationController(duration: const Duration(milliseconds: 400), reverseDuration: const Duration(milliseconds: 600), vsync: this);*/
+    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+    _alignController = AnimationController(duration: const Duration(milliseconds: 600) /*, reverseDuration: const Duration(milliseconds: 600)*/, vsync: this);
     _controller.addListener(() {
       _widthValue = _widthAnimation.value;
       _heightValue = _heightAnimation.value;
@@ -112,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _alignController.addListener(() {
       _alignmentValue = _alignmentAnimation.value;
     });
-    for (int i = 0; i < _numberOfIcons; i++) {
+    /*for (int i = 0; i < _numberOfIcons; i++) {
       Color _tmp;
       while (true) {
         _tmp = Colors.primaries[Random().nextInt(Colors.primaries.length)];
@@ -128,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         }
       }
       _randomColors.add(_tmp);
-    }
+    }*/
   }
 
   @override
@@ -139,26 +142,34 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void swapOrder(int index) {
+  final Curve _sizeCurve = Curves.easeInOutCubicEmphasized,
+      _sizeReverseCurve = Curves.easeInOutCubicEmphasized.flipped,
+      _alignmentCurve = /*Curves.fastLinearToSlowEaseIn*/ Curves.linearToEaseOut,
+      _alignmentReverseCurve = /*Curves.easeInOutCubicEmphasized.flipped*/ Curves.easeInToLinear,
+      _gridCurve = Curves.linearToEaseOut,
+      _gridReverseCurve = Curves.easeInToLinear;
+
+  Future<bool> swapOrder(int index) {
     _icons.add(_icons.removeAt(index));
     _dragAlignment.add(_dragAlignment.removeAt(index));
-    _randomColors.add(_randomColors.removeAt(index));
+    //_randomColors.add(_randomColors.removeAt(index));
     _alignmentAnimation = CurvedAnimation(
       parent: _alignController,
-      curve: Curves.fastLinearToSlowEaseIn,
-      reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+      curve: _alignmentCurve,
+      reverseCurve: _alignmentReverseCurve,
     ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.center));
     _widthAnimation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeInOutCubicEmphasized,
-      reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+      curve: _sizeCurve,
+      reverseCurve: _sizeReverseCurve,
     ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.width)));
     _heightAnimation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeInOutCubicEmphasized,
-      reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+      curve: _sizeCurve,
+      reverseCurve: _sizeReverseCurve,
     ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.height)));
     setState(() {});
+    return Future<bool>.value(true);
   }
 
   @override
@@ -171,23 +182,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         _heightValue = _squareDimension;
         _alignmentAnimation = CurvedAnimation(
           parent: _alignController,
-          curve: Curves.fastLinearToSlowEaseIn,
-          reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+          curve: _alignmentCurve,
+          reverseCurve: _alignmentReverseCurve,
         ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.center));
         _widthAnimation = CurvedAnimation(
           parent: _controller,
-          curve: Curves.easeInOutCubicEmphasized,
-          reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+          curve: _sizeCurve,
+          reverseCurve: _sizeReverseCurve,
         ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.width)));
         _heightAnimation = CurvedAnimation(
           parent: _controller,
-          curve: Curves.easeInOutCubicEmphasized,
-          reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+          curve: _sizeCurve,
+          reverseCurve: _sizeReverseCurve,
         ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.height)));
         _gridAnimation = CurvedAnimation(
           parent: _gridScaleController,
-          curve: Curves.linearToEaseOut,
-          reverseCurve: Curves.easeInToLinear,
+          curve: _gridCurve,
+          reverseCurve: _gridReverseCurve,
         ).drive(Tween<double>(begin: 1.0, end: 0.85));
       });
     }
@@ -196,8 +207,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         if (_controller.isCompleted) {
           _alignmentAnimation = CurvedAnimation(
             parent: _alignController,
-            curve: Curves.fastLinearToSlowEaseIn,
-            reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+            curve: _alignmentCurve,
+            reverseCurve: _alignmentReverseCurve,
           ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
           _controller.reverse();
           _alignController.reverse();
@@ -215,24 +226,80 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             children: <Widget>[
               ScaleTransition(
                 scale: _gridAnimation,
-                child: (_blur)
-                    ? AnimatedBuilder(
-                        animation: _controller,
-                        builder: (BuildContext context, Widget? child2) {
-                          return ImageFiltered(
-                              imageFilter: ImageFilter.blur(
-                                  sigmaX: CurvedAnimation(
-                                    parent: _gridScaleController,
-                                    curve: Curves.easeInOut,
-                                    reverseCurve: Curves.easeInOut.flipped,
-                                  ).drive(Tween<double>(begin: 0.0, end: 6.0)).value,
-                                  sigmaY: CurvedAnimation(
-                                    parent: _gridScaleController,
-                                    curve: Curves.easeInOut,
-                                    reverseCurve: Curves.easeInOut.flipped,
-                                  ).drive(Tween<double>(begin: 0.0, end: 6.0)).value),
-                              child: child2);
-                        },
+                child: (_blur && _gridScaleController.status != AnimationStatus.dismissed)
+                    ? RepaintBoundary(
+                        key: const Key('BackgroundStack'),
+                        child: AnimatedBuilder(
+                          animation: _gridScaleController,
+                          builder: (BuildContext context, Widget? child2) {
+                            return ImageFiltered(
+                                imageFilter: ImageFilter.blur(
+                                    sigmaX: (CurvedAnimation(
+                                              parent: _gridScaleController,
+                                              curve: Curves.easeInOut,
+                                              reverseCurve: Curves.easeInOut /*.flipped*/,
+                                            ).value *
+                                            /*6*/ 4) +
+                                        0.001,
+                                    sigmaY: (CurvedAnimation(
+                                              parent: _gridScaleController,
+                                              curve: Curves.easeInOut,
+                                              reverseCurve: Curves.easeInOut /*.flipped*/,
+                                            ).value *
+                                            /*6*/ 4) +
+                                        0.001),
+                                child: child2);
+                          },
+                          child: Stack(
+                            children: <Widget>[
+                              Center(
+                                child: OverflowBox(
+                                  maxWidth: window.physicalSize.width * 2,
+                                  maxHeight: window.physicalSize.height * 2,
+                                  child: const Image(
+                                    image: AssetImage('assets/Wallpaper.jpg'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Stack(
+                                children: <RepaintBoundary>[
+                                  for (int i = 0; i < _numberOfIcons - 1; i++)
+                                    RepaintBoundary(
+                                      key: Key('$i _ $i'),
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          if (_controller.isDismissed) {
+                                            await swapOrder(i);
+                                            _controller.forward();
+                                            _alignController.forward();
+                                            _gridScaleController.forward();
+                                          }
+                                        },
+                                        child: Align(
+                                          key: Key('child_$i'),
+                                          alignment: _dragAlignment[i],
+                                          child: Container(
+                                            width: _squareDimension,
+                                            height: _squareDimension,
+                                            padding: const EdgeInsets.all(8.0),
+                                            decoration: ShapeDecoration(
+                                                //color: _randomColors[i],
+                                                color: Colors.grey.shade900,
+                                                shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
+                                            child: Image(image: AssetImage(_icons[i]), width: 384),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : RepaintBoundary(
+                        key: const Key('BackgroundStack'),
                         child: Stack(
                           children: <Widget>[
                             Center(
@@ -251,9 +318,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   RepaintBoundary(
                                     key: Key('$i _ $i'),
                                     child: GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
                                         if (_controller.isDismissed) {
-                                          swapOrder(i);
+                                          await swapOrder(i);
                                           _controller.forward();
                                           _alignController.forward();
                                           _gridScaleController.forward();
@@ -270,7 +337,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                               //color: _randomColors[i],
                                               color: Colors.grey.shade900,
                                               shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
-                                          child: _icons[i],
+                                          child: Image(image: AssetImage(_icons[i]), width: 384),
                                         ),
                                       ),
                                     ),
@@ -279,52 +346,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             ),
                           ],
                         ),
-                      )
-                    : Stack(
-                        children: <Widget>[
-                          Center(
-                            child: OverflowBox(
-                              maxWidth: window.physicalSize.width * 2,
-                              maxHeight: window.physicalSize.height * 2,
-                              child: const Image(
-                                image: AssetImage('assets/Wallpaper.jpg'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Stack(
-                            children: <RepaintBoundary>[
-                              for (int i = 0; i < _numberOfIcons - 1; i++)
-                                RepaintBoundary(
-                                  key: Key('$i _ $i'),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (_controller.isDismissed) {
-                                        swapOrder(i);
-                                        _controller.forward();
-                                        _alignController.forward();
-                                        _gridScaleController.forward();
-                                      }
-                                    },
-                                    child: Align(
-                                      key: Key('child_$i'),
-                                      alignment: _dragAlignment[i],
-                                      child: Container(
-                                        width: _squareDimension,
-                                        height: _squareDimension,
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: ShapeDecoration(
-                                            //color: _randomColors[i],
-                                            color: Colors.grey.shade900,
-                                            shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
-                                        child: _icons[i],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
                       ),
               ),
               Align(
@@ -353,9 +374,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               RepaintBoundary(
                 key: Key('$_numberOfIcons _ $_numberOfIcons'),
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (_controller.isDismissed) {
-                      swapOrder(_numberOfIcons - 1);
+                      await swapOrder(_numberOfIcons - 1);
                       _controller.forward();
                       _alignController.forward();
                       _gridScaleController.forward();
@@ -378,11 +399,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               shape: ContinuousRectangleBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(CurvedAnimation(
                                 parent: _gridScaleController,
-                                curve: Curves.linearToEaseOut,
-                                reverseCurve: Curves.easeInToLinear,
+                                curve: _gridCurve,
+                                reverseCurve: _gridReverseCurve,
                               ).drive(Tween<double>(begin: (_squareDimension / 1.5), end: 0.0)).value)))),
                           child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 500),
                             switchInCurve: Curves.easeInOut,
                             switchOutCurve: Curves.easeInOut,
                             child: (!_controller.isDismissed && !(_controller.status == AnimationStatus.reverse))
@@ -395,12 +416,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                             if (_controller.isCompleted) {
                                               _alignmentAnimation = CurvedAnimation(
                                                 parent: _alignController,
-                                                curve: Curves.fastLinearToSlowEaseIn,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _alignmentCurve,
+                                                reverseCurve: _alignmentReverseCurve,
                                               ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
                                               _controller.reverse();
                                               _alignController.reverse();
-                                              _gridScaleController.reverse();
+                                              _gridScaleController.reverse(from: 1.0);
                                             }
                                           },
                                           padding: const EdgeInsets.all(16.0),
@@ -439,18 +460,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                             if (details.velocity.pixelsPerSecond.dy < (-200) || _controller.value < 0.65) {
                                               _alignmentAnimation = CurvedAnimation(
                                                 parent: _alignController,
-                                                curve: Curves.fastLinearToSlowEaseIn,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _alignmentCurve,
+                                                reverseCurve: _alignmentReverseCurve,
                                               ).drive(AlignmentTween(begin: _dragAlignment.last, end: _alignmentValue));
                                               _widthAnimation = CurvedAnimation(
                                                 parent: _controller,
-                                                curve: Curves.easeInOutCubicEmphasized,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _sizeCurve,
+                                                reverseCurve: _sizeReverseCurve,
                                               ).drive(Tween<double>(begin: _squareDimension, end: _widthValue));
                                               _heightAnimation = CurvedAnimation(
                                                 parent: _controller,
-                                                curve: Curves.easeInOutCubicEmphasized,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _sizeCurve,
+                                                reverseCurve: _sizeReverseCurve,
                                               ).drive(Tween<double>(begin: _squareDimension, end: _heightValue));
                                               _controller.reverse();
                                               _alignController.reverse();
@@ -458,18 +479,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                             } else {
                                               _alignmentAnimation = CurvedAnimation(
                                                 parent: _alignController,
-                                                curve: Curves.fastLinearToSlowEaseIn,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _alignmentCurve,
+                                                reverseCurve: _alignmentReverseCurve,
                                               ).drive(AlignmentTween(begin: _alignmentValue, end: Alignment.center));
                                               _widthAnimation = CurvedAnimation(
                                                 parent: _controller,
-                                                curve: Curves.easeInOutCubicEmphasized,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _sizeCurve,
+                                                reverseCurve: _sizeReverseCurve,
                                               ).drive(Tween<double>(begin: _widthValue, end: (MediaQuery.of(context).size.width)));
                                               _heightAnimation = CurvedAnimation(
                                                 parent: _controller,
-                                                curve: Curves.easeInOutCubicEmphasized,
-                                                reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
+                                                curve: _sizeCurve,
+                                                reverseCurve: _sizeReverseCurve,
                                               ).drive(Tween<double>(begin: _heightValue, end: (MediaQuery.of(context).size.height)));
                                               _controller.forward(from: 0.0);
                                               _alignController.forward(from: 0.0);
@@ -480,7 +501,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                     ],
                                   )
-                                : _icons.last,
+                                : Image(image: AssetImage(_icons.last), width: 384),
                           ),
                         ),
                       );
