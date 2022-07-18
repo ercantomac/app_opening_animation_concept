@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:app_opening_animation_concept/open_window.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'constants.dart';
@@ -22,22 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'App Opening Animation Concept',
-      color: Constants.primaryColor,
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(
-          primary: Constants.primaryColor,
-          secondary: Constants.primaryColor,
-          tertiary: Constants.primaryColor,
-        ),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: const ColorScheme.dark(
-          primary: Constants.primaryColor,
-          secondary: Constants.primaryColor,
-          tertiary: Constants.primaryColor,
-        ),
-      ),
+      darkTheme: ThemeData(brightness: Brightness.dark),
       home: const MyHomePage(),
     );
   }
@@ -52,11 +39,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _gridScaleController;
-  late AnimationController _controller, _alignController;
-  late Animation<double> _widthAnimation, _heightAnimation, _gridAnimation;
-  late Animation<Alignment> _alignmentAnimation;
-  late Alignment _alignmentValue = const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1);
-  late double _widthValue, _heightValue;
   final List<Alignment> _dragAlignment = <Alignment>[
     const Alignment((-4 / 4) + 0.1, -0.9),
     const Alignment((-2 / 4) + 0.2, -0.9),
@@ -76,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),
   ];
 
-  //final List<Color> _randomColors = <Color>[];
   final List<String> _icons = <String>[
     'assets/Discord.png',
     'assets/Instagram.png',
@@ -104,70 +85,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _gridScaleController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    /*_controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    _alignController = AnimationController(duration: const Duration(milliseconds: 400), reverseDuration: const Duration(milliseconds: 600), vsync: this);*/
-    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    _alignController = AnimationController(duration: const Duration(milliseconds: 600) /*, reverseDuration: const Duration(milliseconds: 600)*/, vsync: this);
-    _controller.addListener(() {
-      _widthValue = _widthAnimation.value;
-      _heightValue = _heightAnimation.value;
-    });
-    _alignController.addListener(() {
-      _alignmentValue = _alignmentAnimation.value;
-    });
-    /*for (int i = 0; i < _numberOfIcons; i++) {
-      Color _tmp;
-      while (true) {
-        _tmp = Colors.primaries[Random().nextInt(Colors.primaries.length)];
-        int cnt = 0;
-        for (int j = 0; j < _randomColors.length; j++) {
-          if (_randomColors[j] == _tmp) {
-            cnt++;
-            break;
-          }
-        }
-        if (cnt == 0) {
-          break;
-        }
-      }
-      _randomColors.add(_tmp);
-    }*/
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     _gridScaleController.dispose();
-    _alignController.dispose();
     super.dispose();
   }
-
-  final Curve _sizeCurve = Curves.easeInOutCubicEmphasized,
-      _sizeReverseCurve = Curves.easeInOutCubicEmphasized.flipped,
-      _alignmentCurve = /*Curves.fastLinearToSlowEaseIn*/ Curves.linearToEaseOut,
-      _alignmentReverseCurve = /*Curves.easeInOutCubicEmphasized.flipped*/ Curves.easeInToLinear,
-      _gridCurve = Curves.linearToEaseOut,
-      _gridReverseCurve = Curves.easeInToLinear;
 
   Future<bool> swapOrder(int index) {
     _icons.add(_icons.removeAt(index));
     _dragAlignment.add(_dragAlignment.removeAt(index));
-    //_randomColors.add(_randomColors.removeAt(index));
-    _alignmentAnimation = CurvedAnimation(
-      parent: _alignController,
-      curve: _alignmentCurve,
-      reverseCurve: _alignmentReverseCurve,
-    ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.center));
-    _widthAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: _sizeCurve,
-      reverseCurve: _sizeReverseCurve,
-    ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.width)));
-    _heightAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: _sizeCurve,
-      reverseCurve: _sizeReverseCurve,
-    ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.height)));
     setState(() {});
     return Future<bool>.value(true);
   }
@@ -178,350 +106,232 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       setState(() {
         _size = MediaQuery.of(context).size;
         _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
-        _widthValue = _squareDimension;
-        _heightValue = _squareDimension;
-        _alignmentAnimation = CurvedAnimation(
-          parent: _alignController,
-          curve: _alignmentCurve,
-          reverseCurve: _alignmentReverseCurve,
-        ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.center));
-        _widthAnimation = CurvedAnimation(
-          parent: _controller,
-          curve: _sizeCurve,
-          reverseCurve: _sizeReverseCurve,
-        ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.width)));
-        _heightAnimation = CurvedAnimation(
-          parent: _controller,
-          curve: _sizeCurve,
-          reverseCurve: _sizeReverseCurve,
-        ).drive(Tween<double>(begin: _squareDimension, end: (MediaQuery.of(context).size.height)));
-        _gridAnimation = CurvedAnimation(
-          parent: _gridScaleController,
-          curve: _gridCurve,
-          reverseCurve: _gridReverseCurve,
-        ).drive(Tween<double>(begin: 1.0, end: 0.85));
       });
     }
-    return WillPopScope(
-      onWillPop: () async {
-        if (_controller.isCompleted) {
-          _alignmentAnimation = CurvedAnimation(
-            parent: _alignController,
-            curve: _alignmentCurve,
-            reverseCurve: _alignmentReverseCurve,
-          ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
-          _controller.reverse();
-          _alignController.reverse();
-          _gridScaleController.reverse();
-        }
-        return false;
-      },
-      child: SafeArea(
-        child: Scaffold(
-          extendBody: true,
-          extendBodyBehindAppBar: true,
-          backgroundColor: Colors.transparent,
-          body: Stack(
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              ScaleTransition(
-                scale: _gridAnimation,
-                child: (_blur && _gridScaleController.status != AnimationStatus.dismissed)
-                    ? RepaintBoundary(
-                        key: const Key('BackgroundStack'),
-                        child: AnimatedBuilder(
-                          animation: _gridScaleController,
-                          builder: (BuildContext context, Widget? child2) {
-                            return ImageFiltered(
-                                imageFilter: ImageFilter.blur(
-                                    sigmaX: (CurvedAnimation(
-                                              parent: _gridScaleController,
-                                              curve: Curves.easeInOut,
-                                              reverseCurve: Curves.easeInOut /*.flipped*/,
-                                            ).value *
-                                            /*6*/ 4) +
-                                        0.001,
-                                    sigmaY: (CurvedAnimation(
-                                              parent: _gridScaleController,
-                                              curve: Curves.easeInOut,
-                                              reverseCurve: Curves.easeInOut /*.flipped*/,
-                                            ).value *
-                                            /*6*/ 4) +
-                                        0.001),
-                                child: child2);
-                          },
-                          child: Stack(
-                            children: <Widget>[
-                              Center(
-                                child: OverflowBox(
-                                  maxWidth: window.physicalSize.width * 2,
-                                  maxHeight: window.physicalSize.height * 2,
-                                  child: const Image(
-                                    image: AssetImage('assets/Wallpaper.jpg'),
-                                    fit: BoxFit.cover,
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            RepaintBoundary(
+              key: const Key('BackgroundStack'),
+              child: ConditionalBlur(
+                  _blur,
+                  Stack(
+                    children: <Widget>[
+                      Center(
+                        child: OverflowBox(
+                          maxWidth: window.physicalSize.width * 2,
+                          maxHeight: window.physicalSize.height * 2,
+                          child: const Image(
+                            image: AssetImage('assets/Wallpaper.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Stack(
+                        children: <RepaintBoundary>[
+                          for (int i = 0; i < _numberOfIcons; i++)
+                            RepaintBoundary(
+                              key: Key('$i _ $i'),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (_blur) {
+                                    _gridScaleController.forward();
+                                    Navigator.of(context)
+                                        .push(MyRoute(builder: (BuildContext context) => OpenWindow(heroTag: '$i _ $i _ hero')))
+                                        .then((value) {
+                                      _gridScaleController.reverse();
+                                    });
+                                  } else {
+                                    Navigator.of(context).push(
+                                        MyRoute(builder: (BuildContext context) => OpenWindow(heroTag: '$i _ $i _ hero')));
+                                  }
+                                },
+                                child: Align(
+                                  key: Key('child_$i'),
+                                  alignment: _dragAlignment[i],
+                                  child: Hero(
+                                    tag: '$i _ $i _ hero',
+                                    createRectTween: (Rect? begin, Rect? end) {
+                                      return CustomRectTween(begin: begin!, end: end!);
+                                    },
+                                    flightShuttleBuilder: (BuildContext flightContext,
+                                        Animation<double> animation,
+                                        HeroFlightDirection direction,
+                                        BuildContext fromHeroContext,
+                                        BuildContext toHeroContext) {
+                                      return (direction == HeroFlightDirection.push)
+                                          ? Stack(
+                                              children: <Widget>[
+                                                Center(child: toHeroContext.widget),
+                                                Center(
+                                                  child: FadeTransition(
+                                                    opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
+                                                    child: ScaleTransition(
+                                                        scale: CurvedAnimation(parent: animation, curve: Constants.sizeCurve)
+                                                            .drive(Tween<double>(begin: 1.0, end: 3.0)),
+                                                        child: fromHeroContext.widget),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : toHeroContext.widget;
+                                    },
+                                    child: Container(
+                                      width: _squareDimension,
+                                      height: _squareDimension,
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: ShapeDecoration(
+                                          color: Colors.grey.shade900,
+                                          shape: ContinuousRectangleBorder(
+                                              borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
+                                      child: Image(image: AssetImage(_icons[i]), width: 384),
+                                    ),
                                   ),
                                 ),
                               ),
-                              Stack(
-                                children: <RepaintBoundary>[
-                                  for (int i = 0; i < _numberOfIcons - 1; i++)
-                                    RepaintBoundary(
-                                      key: Key('$i _ $i'),
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          if (_controller.isDismissed) {
-                                            await swapOrder(i);
-                                            _controller.forward();
-                                            _alignController.forward();
-                                            _gridScaleController.forward();
-                                          }
-                                        },
-                                        child: Align(
-                                          key: Key('child_$i'),
-                                          alignment: _dragAlignment[i],
-                                          child: Container(
-                                            width: _squareDimension,
-                                            height: _squareDimension,
-                                            padding: const EdgeInsets.all(8.0),
-                                            decoration: ShapeDecoration(
-                                                //color: _randomColors[i],
-                                                color: Colors.grey.shade900,
-                                                shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
-                                            child: Image(image: AssetImage(_icons[i]), width: 384),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : RepaintBoundary(
-                        key: const Key('BackgroundStack'),
-                        child: Stack(
-                          children: <Widget>[
-                            Center(
-                              child: OverflowBox(
-                                maxWidth: window.physicalSize.width * 2,
-                                maxHeight: window.physicalSize.height * 2,
-                                child: const Image(
-                                  image: AssetImage('assets/Wallpaper.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
                             ),
-                            Stack(
-                              children: <RepaintBoundary>[
-                                for (int i = 0; i < _numberOfIcons - 1; i++)
-                                  RepaintBoundary(
-                                    key: Key('$i _ $i'),
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        if (_controller.isDismissed) {
-                                          await swapOrder(i);
-                                          _controller.forward();
-                                          _alignController.forward();
-                                          _gridScaleController.forward();
-                                        }
-                                      },
-                                      child: Align(
-                                        key: Key('child_$i'),
-                                        alignment: _dragAlignment[i],
-                                        child: Container(
-                                          width: _squareDimension,
-                                          height: _squareDimension,
-                                          padding: const EdgeInsets.all(8.0),
-                                          decoration: ShapeDecoration(
-                                              //color: _randomColors[i],
-                                              color: Colors.grey.shade900,
-                                              shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
-                                          child: Image(image: AssetImage(_icons[i]), width: 384),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SwitchListTile.adaptive(
-                  tileColor: Colors.grey.shade900,
-                  activeColor: Constants.primaryColor,
-                  value: _blur,
-                  onChanged: (bool a) {
-                    setState(() {
-                      _blur = !_blur;
-                    });
-                  },
-                  title: const Text(
-                    'Enable Blur',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: const Text(
-                    '(Can cause low performance)',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Constants.primaryColor),
-                  ),
+                    ],
+                  )),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SwitchListTile.adaptive(
+                tileColor: Colors.grey.shade900,
+                activeColor: const Color.fromRGBO(243, 230, 0, 1.0),
+                value: _blur,
+                onChanged: (bool a) {
+                  setState(() {
+                    _blur = !_blur;
+                  });
+                },
+                title: const Text(
+                  'Enable Blur',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0), fontWeight: FontWeight.w600),
+                ),
+                subtitle: const Text(
+                  '(Can cause low performance)',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0)),
                 ),
               ),
-              RepaintBoundary(
-                key: Key('$_numberOfIcons _ $_numberOfIcons'),
-                child: GestureDetector(
-                  onTap: () async {
-                    if (_controller.isDismissed) {
-                      await swapOrder(_numberOfIcons - 1);
-                      _controller.forward();
-                      _alignController.forward();
-                      _gridScaleController.forward();
-                    }
-                  },
-                  child: AnimatedBuilder(
-                    key: Key('drag_$_numberOfIcons'),
-                    animation: _controller,
-                    builder: (BuildContext context, Widget? child) {
-                      return Align(
-                        key: Key('child_$_numberOfIcons'),
-                        alignment: _alignmentValue,
-                        child: Container(
-                          width: _widthValue,
-                          height: _heightValue,
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: ShapeDecoration(
-                              //color: _randomColors.last,
-                              color: Colors.grey.shade900,
-                              shape: ContinuousRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(CurvedAnimation(
-                                parent: _gridScaleController,
-                                curve: _gridCurve,
-                                reverseCurve: _gridReverseCurve,
-                              ).drive(Tween<double>(begin: (_squareDimension / 1.5), end: 0.0)).value)))),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 500),
-                            switchInCurve: Curves.easeInOut,
-                            switchOutCurve: Curves.easeInOut,
-                            child: (!_controller.isDismissed && !(_controller.status == AnimationStatus.reverse))
-                                ? Stack(
-                                    children: <Align>[
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            if (_controller.isCompleted) {
-                                              _alignmentAnimation = CurvedAnimation(
-                                                parent: _alignController,
-                                                curve: _alignmentCurve,
-                                                reverseCurve: _alignmentReverseCurve,
-                                              ).drive(AlignmentTween(begin: _dragAlignment.last, end: Alignment.topCenter));
-                                              _controller.reverse();
-                                              _alignController.reverse();
-                                              _gridScaleController.reverse(from: 1.0);
-                                            }
-                                          },
-                                          padding: const EdgeInsets.all(16.0),
-                                          icon: const Icon(Icons.clear_rounded),
-                                          iconSize: 32.0,
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: GestureDetector(
-                                          onPanUpdate: (DragUpdateDetails details) {
-                                            if (details.delta.dy < 0) {
-                                              if (_alignmentValue.x > (-1) &&
-                                                  _alignmentValue.y > (-1) &&
-                                                  _widthValue > _squareDimension &&
-                                                  _heightValue > _squareDimension) {
-                                                setState(() {
-                                                  _widthValue += (details.delta.dy);
-                                                  //_heightValue += (details.delta.dy);
-                                                  _heightValue -= 1;
-                                                  _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
-                                                });
-                                              }
-                                            } else {
-                                              if (_alignmentValue.x < 1 && _alignmentValue.y < 1 && _widthValue < _size.width && _heightValue < _size.height) {
-                                                setState(() {
-                                                  _widthValue += (details.delta.dy);
-                                                  //_heightValue += (details.delta.dy);
-                                                  _heightValue += 1;
-                                                  _alignmentValue += Alignment((details.delta.dx / _size.width), (details.delta.dy / _size.height));
-                                                });
-                                              }
-                                            }
-                                          },
-                                          onPanEnd: (DragEndDetails details) {
-                                            if (details.velocity.pixelsPerSecond.dy < (-200) || _controller.value < 0.65) {
-                                              _alignmentAnimation = CurvedAnimation(
-                                                parent: _alignController,
-                                                curve: _alignmentCurve,
-                                                reverseCurve: _alignmentReverseCurve,
-                                              ).drive(AlignmentTween(begin: _dragAlignment.last, end: _alignmentValue));
-                                              _widthAnimation = CurvedAnimation(
-                                                parent: _controller,
-                                                curve: _sizeCurve,
-                                                reverseCurve: _sizeReverseCurve,
-                                              ).drive(Tween<double>(begin: _squareDimension, end: _widthValue));
-                                              _heightAnimation = CurvedAnimation(
-                                                parent: _controller,
-                                                curve: _sizeCurve,
-                                                reverseCurve: _sizeReverseCurve,
-                                              ).drive(Tween<double>(begin: _squareDimension, end: _heightValue));
-                                              _controller.reverse();
-                                              _alignController.reverse();
-                                              _gridScaleController.reverse();
-                                            } else {
-                                              _alignmentAnimation = CurvedAnimation(
-                                                parent: _alignController,
-                                                curve: _alignmentCurve,
-                                                reverseCurve: _alignmentReverseCurve,
-                                              ).drive(AlignmentTween(begin: _alignmentValue, end: Alignment.center));
-                                              _widthAnimation = CurvedAnimation(
-                                                parent: _controller,
-                                                curve: _sizeCurve,
-                                                reverseCurve: _sizeReverseCurve,
-                                              ).drive(Tween<double>(begin: _widthValue, end: (MediaQuery.of(context).size.width)));
-                                              _heightAnimation = CurvedAnimation(
-                                                parent: _controller,
-                                                curve: _sizeCurve,
-                                                reverseCurve: _sizeReverseCurve,
-                                              ).drive(Tween<double>(begin: _heightValue, end: (MediaQuery.of(context).size.height)));
-                                              _controller.forward(from: 0.0);
-                                              _alignController.forward(from: 0.0);
-                                            }
-                                          },
-                                          child: child,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : Image(image: AssetImage(_icons.last), width: 384),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: const ShapeDecoration(shape: StadiumBorder()),
-                      child: Container(
-                        height: 6.0,
-                        width: 96.0,
-                        decoration: const ShapeDecoration(color: Colors.white, shape: StadiumBorder()),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget ConditionalBlur(bool shouldWrap, Widget child) {
+    return shouldWrap
+        ? AnimatedBuilder(
+            animation: _gridScaleController,
+            builder: (BuildContext context, Widget? child2) {
+              return ImageFiltered(
+                  imageFilter: ImageFilter.blur(
+                    sigmaX: (CurvedAnimation(
+                              parent: _gridScaleController,
+                              curve: Curves.easeOutQuad,
+                              reverseCurve: Curves.easeInOut,
+                            ).value * /*4*/ 6) +
+                        0.001,
+                    sigmaY: (CurvedAnimation(
+                              parent: _gridScaleController,
+                              curve: Curves.easeOutQuad,
+                              reverseCurve: Curves.easeInOut,
+                            ).value * /*4*/ 6) +
+                        0.001,
+                  ),
+                  child: child2);
+            },
+            child: child,
+          )
+        : child;
+  }
+}
+
+class MyRoute<T> extends CupertinoPageRoute<T> {
+  MyRoute({dynamic builder}) : super(builder: builder);
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 800);
+}
+
+class CustomRectTween extends RectTween {
+  CustomRectTween({
+    Rect? begin,
+    Rect? end,
+  }) : super(begin: begin, end: end);
+
+  bool _dirty = true;
+
+  void _initialize() {
+    assert(begin != null);
+    assert(end != null);
+    _centerArc = CustomArcTween(
+      begin: begin!.center,
+      end: end!.center,
+    );
+    _dirty = false;
+  }
+
+  CustomArcTween? get centerArc {
+    if (begin == null || end == null) {
+      return null;
+    }
+    if (_dirty) {
+      _initialize();
+    }
+    return _centerArc;
+  }
+
+  late CustomArcTween _centerArc;
+
+  @override
+  Rect lerp(double t) {
+    if (_dirty) {
+      _initialize();
+    }
+    final double myCurve = Constants.sizeReverseCurve.transform(t);
+
+    /*return Rect.fromLTRB(
+      lerpDouble(begin!.left, end!.left, myCurve),
+      lerpDouble(begin!.top, end!.top, myCurve),
+      lerpDouble(begin!.right, end!.right, myCurve),
+      lerpDouble(begin!.bottom, end!.bottom, myCurve),
+    );*/
+
+    final Offset center = _centerArc.lerp(t);
+    final double width = lerpDouble(begin!.width, end!.width, myCurve);
+    final double height = lerpDouble(begin!.height, end!.height, myCurve);
+    return Rect.fromLTWH(center.dx - width / 2.0, center.dy - height / 2.0, width, height);
+  }
+
+  double lerpDouble(num a, num b, double myCurve) {
+    return a + ((b - a) * myCurve);
+  }
+}
+
+class CustomArcTween extends Tween<Offset> {
+  CustomArcTween({
+    Offset? begin,
+    Offset? end,
+  }) : super(begin: begin, end: end);
+
+  @override
+  Offset lerp(double t) {
+    final double myCurve = Constants.alignmentReverseCurve.transform(t);
+
+    return Offset(
+      (begin!.dx + ((end!.dx - begin!.dx) * myCurve)),
+      (begin!.dy + ((end!.dy - begin!.dy) * myCurve)),
     );
   }
 }
