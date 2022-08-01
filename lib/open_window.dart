@@ -12,8 +12,11 @@ class OpenWindow extends StatelessWidget {
       createRectTween: (Rect? begin, Rect? end) {
         return CustomRectTween(begin: begin!, end: end!);
       },
-      child: Scaffold(
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0.0),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+        child: Scaffold(
+          appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0.0),
+        ),
       ),
     );
   }

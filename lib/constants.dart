@@ -6,8 +6,13 @@ class Constants {
       alignmentCurve = Curves.easeOutQuint,
       alignmentReverseCurve = Curves. /*easeInOutSine*/ easeInOutQuad;*/
 
-  static Curve sizeCurve = const Cubic(0.25, 0.46, 0.15, 0.86 /*0.165, 1.0*/),
-      sizeReverseCurve = Curves. /*linearToEaseOut*/ easeOutQuad,
+  /*static Curve sizeCurve = const Cubic(0.25, 0.46, 0.15, 0.86),
+      sizeReverseCurve = Curves.easeOutQuad,
       alignmentCurve = Curves.easeOutQuint,
-      alignmentReverseCurve = Curves. /*easeInOutSine*/ easeInOutQuad;
+      alignmentReverseCurve = Curves.easeInOutQuad;*/
+
+  static Curve sizeCurve = const Cubic(0.25, 0.46, 0.15, 0.86),
+      sizeReverseCurve = Curves.linearToEaseOut,
+      alignmentCurve = Curves.easeOutQuint,
+      alignmentReverseCurve = const Cubic(0.25, 0.46, 0.15, 0.86);
 }
