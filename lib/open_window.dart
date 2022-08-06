@@ -2,8 +2,9 @@ import 'package:app_opening_animation_concept/constants.dart';
 import 'package:flutter/material.dart';
 
 class OpenWindow extends StatelessWidget {
-  const OpenWindow({Key? key, required this.heroTag}) : super(key: key);
+  const OpenWindow({Key? key, required this.heroTag, required this.squareDimension}) : super(key: key);
   final String heroTag;
+  final double squareDimension;
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +13,10 @@ class OpenWindow extends StatelessWidget {
       createRectTween: (Rect? begin, Rect? end) {
         return CustomRectTween(begin: begin!, end: end!);
       },
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+      child: Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: ShapeDecoration(
+            shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(squareDimension / 1.5)))),
         child: Scaffold(
           appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0.0),
         ),

@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     'assets/YouTube.png',
     'assets/Discord.png',
   ];
-  late Size _size = Size.zero;
+  //late Size _size = Size.zero;
   final int _numberOfIcons = 16;
   late bool _blur = false;
   late double _squareDimension = 0.0;
@@ -85,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _gridScaleController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
+      setState(() {
+        _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
+      });
+    });
   }
 
   @override
@@ -102,12 +107,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (_size == Size.zero) {
+    /*if (_size == Size.zero) {
       setState(() {
         _size = MediaQuery.of(context).size;
         _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
       });
-    }
+    }*/
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -141,15 +146,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 onTap: () async {
                                   if (_blur) {
                                     _gridScaleController.forward();
-                                    Navigator.of(context)
-                                        .push(MyRoute(builder: (BuildContext context) => OpenWindow(heroTag: '$i _ $i _ hero')))
-                                        .then((value) {
-                                      _gridScaleController.reverse();
-                                    });
-                                  } else {
-                                    Navigator.of(context).push(
-                                        MyRoute(builder: (BuildContext context) => OpenWindow(heroTag: '$i _ $i _ hero')));
                                   }
+                                  Navigator.of(context)
+                                      .push(MyRoute(
+                                          builder: (BuildContext context) =>
+                                              OpenWindow(heroTag: '$i _ $i _ hero', squareDimension: _squareDimension)))
+                                      .then((value) {
+                                    if (_blur) {
+                                      _gridScaleController.reverse();
+                                    }
+                                  });
                                 },
                                 child: Align(
                                   key: Key('child_$i'),
@@ -165,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                         BuildContext fromHeroContext,
                                         BuildContext toHeroContext) {
                                       return (direction == HeroFlightDirection.push)
-                                          ? Stack(
+                                          ? /*Stack(
                                               children: <Widget>[
                                                 Center(child: toHeroContext.widget),
                                                 Center(
@@ -178,8 +184,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                                   ),
                                                 ),
                                               ],
+                                            )*/
+                                          Stack(
+                                              alignment: Alignment.center,
+                                              fit: StackFit.expand,
+                                              children: <Widget>[
+                                                toHeroContext.widget,
+                                                FadeTransition(
+                                                  opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
+                                                  child: fromHeroContext.widget,
+                                                ),
+                                              ],
                                             )
-                                          : toHeroContext.widget;
+                                          : Stack(
+                                              alignment: Alignment.center,
+                                              fit: StackFit.expand,
+                                              children: <Widget>[
+                                                fromHeroContext.widget,
+                                                FadeTransition(
+                                                  opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
+                                                  child: toHeroContext.widget,
+                                                ),
+                                              ],
+                                            );
                                     },
                                     child: Container(
                                       width: _squareDimension,
