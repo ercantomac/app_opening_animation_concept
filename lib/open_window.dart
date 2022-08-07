@@ -16,8 +16,9 @@ class OpenWindow extends StatelessWidget {
       child: Container(
         clipBehavior: Clip.hardEdge,
         decoration: ShapeDecoration(
-            shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(squareDimension / 1.5)))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(squareDimension / 1.84)))),
         child: Scaffold(
+          backgroundColor: Colors.grey.shade800,
           appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0.0),
         ),
       ),

@@ -22,10 +22,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'App Opening Animation Concept',
-      darkTheme: ThemeData(brightness: Brightness.dark),
-      home: const MyHomePage(),
+    return Container(
+      color: Colors.grey.shade800,
+      child: MaterialApp(
+        title: 'App Opening Animation Concept',
+        color: Colors.grey.shade800,
+        darkTheme: ThemeData(brightness: Brightness.dark),
+        home: const MyHomePage(),
+      ),
     );
   }
 }
@@ -40,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _gridScaleController;
   final List<Alignment> _dragAlignment = <Alignment>[
-    const Alignment((-4 / 4) + 0.1, -0.9),
+    /*const Alignment((-4 / 4) + 0.1, -0.9),
     const Alignment((-2 / 4) + 0.2, -0.9),
     const Alignment(0.3, -0.9),
     const Alignment((2 / 4) + 0.4, -0.9),
@@ -55,7 +59,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     const Alignment((-4 / 4) + 0.1, (2 / 4) + 0.1),
     const Alignment((-2 / 4) + 0.2, (2 / 4) + 0.1),
     const Alignment(0.3, (2 / 4) + 0.1),
-    const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),
+    const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),*/
+    const Alignment(-0.87, -0.87),
+    const Alignment(-0.29, -0.87),
+    const Alignment(0.29, -0.87),
+    const Alignment(0.87, -0.87),
+    const Alignment(-0.87, -0.33),
+    const Alignment(-0.29, -0.33),
+    const Alignment(0.29, -0.33),
+    const Alignment(0.87, -0.33),
+    const Alignment(-0.87, 0.21),
+    const Alignment(-0.29, 0.21),
+    const Alignment(0.29, 0.21),
+    const Alignment(0.87, 0.21),
+    const Alignment(-0.87, 0.75),
+    const Alignment(-0.29, 0.75),
+    const Alignment(0.29, 0.75),
+    const Alignment(0.87, 0.75),
   ];
 
   final List<String> _icons = <String>[
@@ -76,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     'assets/YouTube.png',
     'assets/Discord.png',
   ];
-  //late Size _size = Size.zero;
+
   final int _numberOfIcons = 16;
   late bool _blur = false;
   late double _squareDimension = 0.0;
@@ -87,7 +107,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _gridScaleController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       setState(() {
-        _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
+        //_squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
+        if (MediaQuery.of(context).size.aspectRatio > 1) {
+          _squareDimension = 1.33 *
+              sqrt(sqrt(MediaQuery.of(context).size.width * MediaQuery.of(context).size.height)) *
+              MediaQuery.of(context).size.aspectRatio;
+        } else {
+          _squareDimension = 1.33 *
+              sqrt(sqrt(MediaQuery.of(context).size.width * MediaQuery.of(context).size.height)) /
+              MediaQuery.of(context).size.aspectRatio;
+        }
       });
     });
   }
@@ -107,12 +136,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    /*if (_size == Size.zero) {
-      setState(() {
-        _size = MediaQuery.of(context).size;
-        _squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
-      });
-    }*/
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -265,14 +288,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   imageFilter: ImageFilter.blur(
                     sigmaX: (CurvedAnimation(
                               parent: _gridScaleController,
-                              curve: Curves.easeOutQuad,
-                              reverseCurve: Curves.easeInOut,
+                              curve: Curves. /*easeOutQuad*/ decelerate,
+                              //reverseCurve: Curves.easeInOut,
                             ).value * /*4*/ 6) +
                         0.001,
                     sigmaY: (CurvedAnimation(
                               parent: _gridScaleController,
-                              curve: Curves.easeOutQuad,
-                              reverseCurve: Curves.easeInOut,
+                              curve: Curves. /*easeOutQuad*/ decelerate,
+                              //reverseCurve: Curves.easeInOut,
                             ).value * /*4*/ 6) +
                         0.001,
                   ),
