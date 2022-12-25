@@ -1,4 +1,4 @@
-import 'package:app_opening_animation_concept/constants.dart';
+import 'package:app_launch_animation/constants.dart';
 import 'package:flutter/material.dart';
 
 class OpenWindow extends StatelessWidget {
@@ -14,9 +14,9 @@ class OpenWindow extends StatelessWidget {
         return CustomRectTween(begin: begin!, end: end!);
       },
       child: Container(
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(squareDimension / 1.84)))),
+            shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(squareDimension / 1.5)))),
         child: Scaffold(
           backgroundColor: Colors.grey.shade800,
           appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0.0),
