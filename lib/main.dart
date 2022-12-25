@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:app_opening_animation_concept/open_window.dart';
+
+import 'package:app_launch_animation/open_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'constants.dart';
 
 void main() {
@@ -14,52 +16,134 @@ void main() {
   ));
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(const MyApp());
+  runApp(MyApp(blurEnabled: true));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+Route _createRoute(Widget child, bool blur, [bool blurToggle = false]) {
+  return PageRouteBuilder(
+    transitionDuration: Duration(milliseconds: blurToggle ? 0 : 1000),
+    reverseTransitionDuration: Duration(milliseconds: blurToggle ? 0 : 1100),
+    //fullscreenDialog: true,
+    opaque: false,
+    pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+      return blur
+          ? ScaleTransition(
+              scale: Tween(begin: 1.0, end: 0.92).animate(CurvedAnimation(
+                parent: secondaryAnimation,
+                curve: const Cubic(0.25, 0.1, 0.25, 1.0),
+                reverseCurve: const Cubic(0.25, 0.1, 0.25, 1.0).flipped,
+              )),
+              child: AnimatedBuilder(
+                animation: secondaryAnimation,
+                builder: (BuildContext context, Widget? child2) {
+                  return ImageFiltered(
+                    imageFilter: ImageFilter.blur(
+                      sigmaX: (CurvedAnimation(
+                                parent: secondaryAnimation,
+                                curve: Curves.decelerate,
+                                reverseCurve: Curves.decelerate.flipped,
+                              ).value *
+                              6) +
+                          0.001,
+                      sigmaY: (CurvedAnimation(
+                                parent: secondaryAnimation,
+                                curve: Curves.decelerate,
+                                reverseCurve: Curves.decelerate.flipped,
+                              ).value *
+                              6) +
+                          0.001,
+                    ),
+                    child: child2,
+                  );
+                },
+                child: child,
+              ),
+            )
+          : child;
+    },
+    transitionsBuilder:
+        (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child2) {
+      return child2;
+    },
+  );
+}
+
+class MyApp extends StatefulWidget {
+  MyApp({Key? key, required this.blurEnabled}) : super(key: key);
+  late bool blurEnabled = true;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.grey.shade800,
       child: MaterialApp(
-        title: 'App Opening Animation Concept',
+        title: 'App Launch Animation Concept',
         color: Colors.grey.shade800,
+        navigatorKey: _navKey,
         darkTheme: ThemeData(brightness: Brightness.dark),
-        home: const MyHomePage(),
+        onGenerateRoute: (RouteSettings settings) {
+          return _createRoute(
+              SafeArea(
+                child: Scaffold(
+                  extendBody: true,
+                  extendBodyBehindAppBar: true,
+                  backgroundColor: Colors.transparent,
+                  body: Stack(
+                    children: <Widget>[
+                      MyHomePage(blur: widget.blurEnabled),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SwitchListTile.adaptive(
+                          tileColor: Colors.grey.shade900,
+                          activeColor: const Color.fromRGBO(243, 230, 0, 1.0),
+                          value: widget.blurEnabled,
+                          onChanged: (bool a) {
+                            setState(() {
+                              widget.blurEnabled = !widget.blurEnabled;
+                            });
+                            _navKey.currentState!.pushReplacement(
+                                _createRoute(MyApp(blurEnabled: widget.blurEnabled), widget.blurEnabled, true));
+                          },
+                          title: const Text(
+                            'Enable Blur',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0), fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: const Text(
+                            '(Can cause low performance)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              widget.blurEnabled);
+        },
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({Key? key, required this.blur}) : super(key: key);
+  final bool blur;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  late AnimationController _gridScaleController;
   final List<Alignment> _dragAlignment = <Alignment>[
-    /*const Alignment((-4 / 4) + 0.1, -0.9),
-    const Alignment((-2 / 4) + 0.2, -0.9),
-    const Alignment(0.3, -0.9),
-    const Alignment((2 / 4) + 0.4, -0.9),
-    const Alignment((-4 / 4) + 0.1, (-2 / 4) + 0.1),
-    const Alignment((-2 / 4) + 0.2, (-2 / 4) + 0.1),
-    const Alignment(0.3, (-2 / 4) + 0.1),
-    const Alignment((2 / 4) + 0.4, (-2 / 4) + 0.1),
-    const Alignment((-4 / 4) + 0.1, 0.1),
-    const Alignment((-2 / 4) + 0.2, 0.1),
-    const Alignment(0.3, 0.1),
-    const Alignment((2 / 4) + 0.4, 0.1),
-    const Alignment((-4 / 4) + 0.1, (2 / 4) + 0.1),
-    const Alignment((-2 / 4) + 0.2, (2 / 4) + 0.1),
-    const Alignment(0.3, (2 / 4) + 0.1),
-    const Alignment((2 / 4) + 0.4, (2 / 4) + 0.1),*/
     const Alignment(-0.87, -0.87),
     const Alignment(-0.29, -0.87),
     const Alignment(0.29, -0.87),
@@ -98,13 +182,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   ];
 
   final int _numberOfIcons = 16;
-  late bool _blur = false;
   late double _squareDimension = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _gridScaleController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
       setState(() {
         //_squareDimension = (((sqrt(MediaQuery.of(context).size.width) * sqrt(MediaQuery.of(context).size.height)).floor()) / 8);
@@ -122,196 +204,110 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   @override
-  void dispose() {
-    _gridScaleController.dispose();
-    super.dispose();
-  }
-
-  Future<bool> swapOrder(int index) {
-    _icons.add(_icons.removeAt(index));
-    _dragAlignment.add(_dragAlignment.removeAt(index));
-    setState(() {});
-    return Future<bool>.value(true);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          clipBehavior: Clip.none,
-          children: <Widget>[
-            RepaintBoundary(
-              key: const Key('BackgroundStack'),
-              child: ConditionalBlur(
-                  _blur,
-                  Stack(
-                    children: <Widget>[
-                      Center(
-                        child: OverflowBox(
-                          maxWidth: window.physicalSize.width * 2,
-                          maxHeight: window.physicalSize.height * 2,
-                          child: const Image(
-                            image: AssetImage('assets/Wallpaper.jpg'),
-                            fit: BoxFit.cover,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        RepaintBoundary(
+          key: const Key('BackgroundStack'),
+          child: Stack(
+            children: <Widget>[
+              Center(
+                child: OverflowBox(
+                  maxWidth: window.physicalSize.width * 2,
+                  maxHeight: window.physicalSize.height * 2,
+                  child: const Image(
+                    image: AssetImage('assets/Wallpaper.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Stack(
+                children: <RepaintBoundary>[
+                  for (int i = 0; i < _numberOfIcons; i++)
+                    RepaintBoundary(
+                      key: Key('$i _ $i'),
+                      child: GestureDetector(
+                        onTap: () async {
+                          Navigator.of(context).push(
+                            _createRoute(OpenWindow(heroTag: '$i _ $i _ hero', squareDimension: _squareDimension), widget.blur),
+                          );
+                        },
+                        child: Align(
+                          key: Key('child_$i'),
+                          alignment: _dragAlignment[i],
+                          child: Hero(
+                            tag: '$i _ $i _ hero',
+                            createRectTween: (Rect? begin, Rect? end) {
+                              return CustomRectTween(begin: begin!, end: end!);
+                            },
+                            flightShuttleBuilder: (BuildContext context, Animation<double> animation,
+                                HeroFlightDirection direction, BuildContext fromContext, BuildContext toContext) {
+                              final Hero toHero = toContext.widget as Hero, fromHero = fromContext.widget as Hero;
+
+                              final MediaQueryData? toMediaQueryData = MediaQuery.maybeOf(toContext);
+                              final MediaQueryData? fromMediaQueryData = MediaQuery.maybeOf(fromContext);
+
+                              if (toMediaQueryData == null || fromMediaQueryData == null) {
+                                return toHero.child;
+                              }
+
+                              return Stack(
+                                fit: StackFit.expand,
+                                children: <Positioned>[
+                                  Positioned.fill(
+                                    child: direction == HeroFlightDirection.push ? toHero.child : fromHero.child,
+                                  ),
+                                  Positioned.fill(
+                                    child: direction == HeroFlightDirection.push
+                                        ? FadeTransition(
+                                            opacity: Tween<double>(begin: 1.0, end: 0.0)
+                                                .animate(CurvedAnimation(parent: animation, curve: Constants.alignmentCurve)),
+                                            child: AnimatedBuilder(
+                                              animation: animation,
+                                              builder: (BuildContext context, Widget? child) {
+                                                return Padding(
+                                                  padding: Tween<EdgeInsets>(
+                                                          begin: fromMediaQueryData.padding, end: toMediaQueryData.padding)
+                                                      .animate(CurvedAnimation(parent: animation, curve: Constants.sizeCurve))
+                                                      .value,
+                                                  child: child,
+                                                );
+                                              },
+                                              child: fromHero.child,
+                                            ),
+                                          )
+                                        : FadeTransition(
+                                            opacity: Tween<double>(begin: 1.0, end: 0.0).animate(CurvedAnimation(
+                                                parent: animation, curve: Constants.alignmentReverseCurve.flipped)),
+                                            child: toHero.child,
+                                          ),
+                                  ),
+                                ],
+                              );
+                            },
+                            child: Container(
+                              width: _squareDimension,
+                              height: _squareDimension,
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: ShapeDecoration(
+                                  color: Colors.grey.shade900,
+                                  shape: ContinuousRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
+                              child: Image(image: AssetImage(_icons[i]), width: 384),
+                            ),
                           ),
                         ),
                       ),
-                      Stack(
-                        children: <RepaintBoundary>[
-                          for (int i = 0; i < _numberOfIcons; i++)
-                            RepaintBoundary(
-                              key: Key('$i _ $i'),
-                              child: GestureDetector(
-                                onTap: () async {
-                                  if (_blur) {
-                                    _gridScaleController.forward();
-                                  }
-                                  Navigator.of(context)
-                                      .push(MyRoute(
-                                          builder: (BuildContext context) =>
-                                              OpenWindow(heroTag: '$i _ $i _ hero', squareDimension: _squareDimension)))
-                                      .then((value) {
-                                    if (_blur) {
-                                      _gridScaleController.reverse();
-                                    }
-                                  });
-                                },
-                                child: Align(
-                                  key: Key('child_$i'),
-                                  alignment: _dragAlignment[i],
-                                  child: Hero(
-                                    tag: '$i _ $i _ hero',
-                                    createRectTween: (Rect? begin, Rect? end) {
-                                      return CustomRectTween(begin: begin!, end: end!);
-                                    },
-                                    flightShuttleBuilder: (BuildContext flightContext,
-                                        Animation<double> animation,
-                                        HeroFlightDirection direction,
-                                        BuildContext fromHeroContext,
-                                        BuildContext toHeroContext) {
-                                      return (direction == HeroFlightDirection.push)
-                                          ? /*Stack(
-                                              children: <Widget>[
-                                                Center(child: toHeroContext.widget),
-                                                Center(
-                                                  child: FadeTransition(
-                                                    opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
-                                                    child: ScaleTransition(
-                                                        scale: CurvedAnimation(parent: animation, curve: Constants.sizeCurve)
-                                                            .drive(Tween<double>(begin: 1.0, end: 3.0)),
-                                                        child: fromHeroContext.widget),
-                                                  ),
-                                                ),
-                                              ],
-                                            )*/
-                                          Stack(
-                                              alignment: Alignment.center,
-                                              fit: StackFit.expand,
-                                              children: <Widget>[
-                                                toHeroContext.widget,
-                                                FadeTransition(
-                                                  opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
-                                                  child: fromHeroContext.widget,
-                                                ),
-                                              ],
-                                            )
-                                          : Stack(
-                                              alignment: Alignment.center,
-                                              fit: StackFit.expand,
-                                              children: <Widget>[
-                                                fromHeroContext.widget,
-                                                FadeTransition(
-                                                  opacity: animation.drive(Tween<double>(begin: 1.0, end: 0.0)),
-                                                  child: toHeroContext.widget,
-                                                ),
-                                              ],
-                                            );
-                                    },
-                                    child: Container(
-                                      width: _squareDimension,
-                                      height: _squareDimension,
-                                      padding: const EdgeInsets.all(8.0),
-                                      decoration: ShapeDecoration(
-                                          color: Colors.grey.shade900,
-                                          shape: ContinuousRectangleBorder(
-                                              borderRadius: BorderRadius.all(Radius.circular((_squareDimension / 1.5))))),
-                                      child: Image(image: AssetImage(_icons[i]), width: 384),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  )),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SwitchListTile.adaptive(
-                tileColor: Colors.grey.shade900,
-                activeColor: const Color.fromRGBO(243, 230, 0, 1.0),
-                value: _blur,
-                onChanged: (bool a) {
-                  setState(() {
-                    _blur = !_blur;
-                  });
-                },
-                title: const Text(
-                  'Enable Blur',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0), fontWeight: FontWeight.w600),
-                ),
-                subtitle: const Text(
-                  '(Can cause low performance)',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color.fromRGBO(243, 230, 0, 1.0)),
-                ),
+                    ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
-
-  Widget ConditionalBlur(bool shouldWrap, Widget child) {
-    return shouldWrap
-        ? AnimatedBuilder(
-            animation: _gridScaleController,
-            builder: (BuildContext context, Widget? child2) {
-              return ImageFiltered(
-                  imageFilter: ImageFilter.blur(
-                    sigmaX: (CurvedAnimation(
-                              parent: _gridScaleController,
-                              curve: Curves. /*easeOutQuad*/ decelerate,
-                              //reverseCurve: Curves.easeInOut,
-                            ).value * /*4*/ 6) +
-                        0.001,
-                    sigmaY: (CurvedAnimation(
-                              parent: _gridScaleController,
-                              curve: Curves. /*easeOutQuad*/ decelerate,
-                              //reverseCurve: Curves.easeInOut,
-                            ).value * /*4*/ 6) +
-                        0.001,
-                  ),
-                  child: child2);
-            },
-            child: child,
-          )
-        : child;
-  }
-}
-
-class MyRoute<T> extends CupertinoPageRoute<T> {
-  MyRoute({dynamic builder}) : super(builder: builder);
-
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 800);
 }
 
 class CustomRectTween extends RectTween {
