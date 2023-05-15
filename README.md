@@ -2,7 +2,8 @@
 
 A mobile app icon launch animation concept, built with Flutter.
 
-## Working Demo: https://vocal-tulumba-15371e.netlify.app/
+## Working Demo: https://app-launch-animation-concept.netlify.app/
+## Working Demo (WebAssembly): https://wasm-app-launch-animation-concept.netlify.app/
 
 ## Getting Started
 
