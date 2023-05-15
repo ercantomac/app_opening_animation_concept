@@ -3,7 +3,7 @@
 A mobile app icon launch animation concept, built with Flutter.
 
 ## Working Demo: https://app-launch-animation-concept.netlify.app/
-## Working Demo (WebAssembly): https://wasm-app-launch-animation-concept.netlify.app/
+## Working Demo (WebAssembly, needs some experimental browser flags to be enabled): https://wasm-app-launch-animation-concept.netlify.app/
 
 ## Getting Started
 
